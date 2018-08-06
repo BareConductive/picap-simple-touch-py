@@ -7,7 +7,7 @@
 #
 # Written for Raspberry Pi.
 #
-# Bare Conductive code written by Szymon Kaliski.
+# Bare Conductive code written by Szymon Kaliski and Tom Hartley.
 #
 # This work is licensed under a MIT license https://opensource.org/licenses/MIT
 #
@@ -34,12 +34,12 @@
 #################################################################################
 
 from time import sleep
-import signal, sys, MPR121
+import MPR121
 
 try:
   sensor = MPR121.begin()
 except Exception as e:
-  print e
+  print (e)
   sys.exit(1)
 
 # this is the touch threshold - setting it low makes it more like a proximity trigger default value is 40 for touch
@@ -52,19 +52,18 @@ release_threshold = 20
 sensor.set_touch_threshold(touch_threshold)
 sensor.set_release_threshold(release_threshold)
 
-# handle ctrl+c gracefully
-def signal_handler(signal, frame):
-  sys.exit(0)
 
-signal.signal(signal.SIGINT, signal_handler)
-
-while True:
-  if sensor.touch_status_changed():
-    sensor.update_touch_data()
-    for i in range(12):
-      if sensor.is_new_touch(i):
-        print "electrode {0} was just touched".format(i)
-      elif sensor.is_new_release(i):
-        print "electrode {0} was just released".format(i)
-
-  sleep(0.01)
+running = True
+while running:
+  try:
+    if sensor.touch_status_changed():
+      sensor.update_touch_data()
+      for i in range(12):
+        if sensor.is_new_touch(i):
+          print ("electrode {0} was just touched".format(i))
+        elif sensor.is_new_release(i):
+          print ("electrode {0} was just released".format(i))
+    sleep(0.01)
+  except KeyboardInterrupt:
+    running = False
+  
