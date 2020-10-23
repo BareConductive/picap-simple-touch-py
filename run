@@ -55,7 +55,7 @@ execute_and_echo() {
 
 # add sudo if we need to - and pass all arguments to the target
 if [[ $EUID -ne 0 ]]; then
-    execute_and_echo sudo python ./simple-touch.py "$@"
+    execute_and_echo sudo python3 ./simple-touch.py "$@"
 else
-    execute_and_echo python ./simple-touch.py "$@"
+    execute_and_echo python3 ./simple-touch.py "$@"
 fi
